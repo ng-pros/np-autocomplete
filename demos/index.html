@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html ng-app="app" ng-controller="ctrl">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>np-autocomplete demos</title>
+		<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+		<link rel="stylesheet" href="../dist/np-autocomplete.min.css"/>
+		<style>
+			.glyphicon-refresh-animate {
+			-animation: spin .7s infinite linear;
+			-ms-animation: spin .7s infinite linear;
+			-webkit-animation: spinw .7s infinite linear;
+			-moz-animation: spinm .7s infinite linear;
+			}
+			
+			@keyframes spin {
+			from { transform: scale(1) rotate(0deg);}
+			to { transform: scale(1) rotate(360deg);}
+			}
+			
+			@-webkit-keyframes spinw {
+			from { -webkit-transform: rotate(0deg);}
+			to { -webkit-transform: rotate(360deg);}
+			}
+			
+			@-moz-keyframes spinm {
+			from { -moz-transform: rotate(0deg);}
+			to { -moz-transform: rotate(360deg);}
+			}
+			.form-group span.form-control-feedback {
+				display: none;
+			}
+			.form-group.has-feedback span.form-control-feedback {
+				display: block;
+			}
+			.np-autocomplete-wrapper.np-autocomplete-opened input.form-control {
+				border-bottom-left-radius: 0;
+				border-bottom-right-radius: 0;
+			}
+			.np-autocomplete-list .list-group-item:first-child {
+				border-top-left-radius: 0;
+				border-top-right-radius: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-12 col-xs-12">
+					<form name="mainForm">
+						<div class="form-group" np-autocomplete="countriesOptions" ng-model="raeef" ng-class="{'has-error': mainForm.$invalid}" required>
+							<label class="control-label">Country</label>
+							<input type="text" class="form-control">
+							<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate form-control-feedback" aria-hidden="true"></span>
+							<span id="inputSuccess2Status" class="sr-only">(success)</span>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<script src="../bower_components/jquery/dist/jquery.min.js"></script>
+		<script src="../bower_components/angular/angular.min.js"></script>
+		<script src="../dist/np-autocomplete.min.js"></script>
+		<script src="app.js"></script>
+	</body>
+</html>

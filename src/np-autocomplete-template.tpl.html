@@ -1,0 +1,5 @@
+<div id="np-autocomplete-input"></div>
+<div class="list-group np-autocomplete-list" ng-if="isOpened">
+	<button type="button" class="list-group-item" ng-if="!searchResults.length && !isLoading" ng-click="clear()">{{noResultsMessage}}</button>
+	<a class="list-group-item" ng-if="isLoading">{{loadingMessage}}</a>
+</div>
