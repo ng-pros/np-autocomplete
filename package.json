@@ -1,7 +1,7 @@
 {
   "name": "np-autocomplete",
   "version": "1.0.0",
-  "description": "Autocomplete directive AngularJS",
+  "description": "Full-functional autocomplete (typeahead alternative) AngularJS directive",
   "repository": {
     "type": "git",
     "url": "https://github.com/ng-pros/np-autocomplete.git"
@@ -9,6 +9,7 @@
   "keywords": [
     "autocomplete",
     "typeahead",
+    "typeahead alternative",
     "angularjs",
     "angular",
     "directive"
@@ -29,5 +30,6 @@
     "grunt-contrib-less": "~1.0.1",
     "grunt-html2js": "~0.3.2",
     "grunt-ng-annotate": "~1.0.1"
-  }
+  },
+  "license": "MIT"
 }
