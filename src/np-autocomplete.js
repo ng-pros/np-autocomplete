@@ -149,7 +149,7 @@ angular.module('ng-pros.directive.autocomplete', [
 
 			template = angular.element(options.template || $templateCache.get(options.templateUrl));
 
-			itemTemplate = itemTemplate || $templateCache.get('np-autocomplete-item-template.tpl.html');
+			itemTemplate = options.itemTemplate || $templateCache.get(options.itemTemplateUrl);
 
 			listElement = template.closest('.np-autocomplete-list');
 			listElement.append(itemTemplate);
