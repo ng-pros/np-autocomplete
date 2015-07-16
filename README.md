@@ -43,6 +43,7 @@ myAngularApp.controller('ctrl', ['$scope', function($scope) {
   };
 }]);
 ```
+You can also see the [demos](http://ng-pros.github.io/np-autocomplete/demos.html).
 
 ### Attributes:
 Attribute | Required | Description
