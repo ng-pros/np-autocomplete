@@ -16,7 +16,7 @@ angular.module('ng-pros.directive.autocomplete', [
 
 			var id = attrs.id,
 				input = null,
-				lastVal = null,
+				lastVal = '',
 				template = null,
 				timeoutId = null,
 				listElement = null,
@@ -229,12 +229,10 @@ angular.module('ng-pros.directive.autocomplete', [
 			};
 
 			scope.match = function(val) {
-				var regex = new RegExp(lastVal, 'ig'),
+				var regex = new RegExp(lastVal.replace(/([{}()[\]\\.?*+^$|=!:~-])/g, '\\$1'), 'ig'),
 					result = val ? val : '';
 
-				return $sce.trustAsHtml(result.replace(regex, function(match, i) {
-					return '<span class="np-autocomplete-match">' + match + '</span>';
-				}));
+				return $sce.trustAsHtml(result.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(regex, '<span class="np-autocomplete-match">$&</span>'));
 			};
 
 			scope.$on('$destroy', function() {
