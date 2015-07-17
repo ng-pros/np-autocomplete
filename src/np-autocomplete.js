@@ -229,7 +229,7 @@ angular.module('ng-pros.directive.autocomplete', [
 			};
 
 			scope.match = function(val) {
-				var regex = new RegExp(lastVal.replace(/([{}()[\]\\.?*+^$|=!:~-])/g, '\\$1'), 'ig'),
+				var regex = new RegExp(lastVal.trim().replace(/([{}()[\]\\.?*+^$|=!:~-])/g, '\\$1'), 'ig'),
 					result = val ? val : '';
 
 				return $sce.trustAsHtml(result.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(regex, '<span class="np-autocomplete-match">$&</span>'));
