@@ -235,6 +235,28 @@ angular.module('ng-pros.directive.autocomplete', [
 				return $sce.trustAsHtml(result.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(regex, '<span class="np-autocomplete-match">$&</span>'));
 			};
 
+			if (attrs.npInputModel)
+				scope.$watch('npInputModel', function(val) {
+					input.val(typeof val === 'string' ? val : null);
+				});
+
+			if (attrs.npSelectedItem)
+				scope.$watch('npSelectedItem', function(val) {
+					scope.npSelectedItem = val;
+
+					var model = val ? eval('val.' + options.valueAttr) : null;
+
+					if (attrs.ngModel)
+						ngModelCtrl.$setViewValue(model);
+
+					var inputModel = val ? eval('val.' + options.nameAttr) : null;
+
+					if (attrs.npInputModel)
+						scope.npInputModel = inputModel;
+					else
+						input.val(inputModel);
+				});
+
 			scope.$on('$destroy', function() {
 				angular.element(window).off('resize', resize);
 				angular.element(document).off('click keyup', blurHandler);
