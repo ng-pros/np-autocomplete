@@ -64,6 +64,7 @@ limitParam | String | No | limit | per_page | Query param holds the limit value 
 searchParam | String | No | search | query | Query param holds the search text in requests.
 delay | Integer | No | 500 (ms) | 1000 (ms) | Time in milliseconds which delays request after changing the search text.
 minlength | Integer | No | 2 | 5 | The minimum length of string required before start searching.
+dataHoder | String | No |  | items | The name of the field in the retrieved data which holds the array of objects those will be used for the autocomplete.
 clearOnSelect | Boolean | No | false | true | Either clear the search text after selecting an item or not.
 template (HTML) | String | No |  |  | Overrides the default template.
 templateUrl | String | No |  |  | Gets template with $templateCache to overrides the default template.
