@@ -21,10 +21,8 @@ angular.module('ng-pros.directive.autocomplete', [
 				timeoutId = null,
 				listElement = null,
 				hasSelected = false,
-				isKeyPressed = false,
 				itemTemplate = null,
-				isPasteChange = false,
-				pasteTimeoutId = null,
+				isInternalUpdate = false,
 				options = {
 					limit: 5,
 					delay: 500,
@@ -48,7 +46,7 @@ angular.module('ng-pros.directive.autocomplete', [
 
 						element.removeClass(options.closedClass);
 						element.addClass(options.openedClass);
-					}, 100);
+					});
 				},
 				close = function() {
 					$timeout(function() {
@@ -61,11 +59,15 @@ angular.module('ng-pros.directive.autocomplete', [
 				deselect = function() {
 					hasSelected = false;
 
+					isInternalUpdate = true;
+
 					if (attrs.npSelectedItem)
 						scope.npSelectedItem = null;
 
 					if (attrs.ngModel)
 						ngModelCtrl.$setViewValue();
+
+					isInternalUpdate = false;
 
 					if (options.onDeselect)
 						options.onDeselect();
@@ -137,16 +139,23 @@ angular.module('ng-pros.directive.autocomplete', [
 					});
 				};
 
-			scope.npAutocomplete = options = angular.extend(options, scope.npAutocomplete);
+			// merge options with defaults
+			scope.npAutocomplete = angular.extend(options, scope.npAutocomplete);
 
+			options.delay = options.delay > 100 ? options.delay : 100;
+			options.params[options.limitParam] = options.limit;
+
+			// set directive id if has been not setting
 			if (!id) {
 				id = 'np-autocomplete-' + Date.now();
 				element.attr('id', id);
 			}
 
+			// add default classes
 			element.addClass('np-autocomplete-wrapper');
 			element.addClass(options.closedClass);
 
+			// configure template
 			template = angular.element(options.template || $templateCache.get(options.templateUrl));
 
 			itemTemplate = options.itemTemplate || $templateCache.get(options.itemTemplateUrl);
@@ -157,33 +166,14 @@ angular.module('ng-pros.directive.autocomplete', [
 			element.html($compile(template)(scope));
 			element.find('#np-autocomplete-input').replaceWith(transclude());
 
-			resize();
-
+			// find input element
 			input = element.find('input');
 
-			options.delay = options.delay > 100 ? options.delay : 100;
+			// resize list once
+			resize();
 
-			if (options.limit)
-				options.params[options.limitParam] = options.limit;
-
-			input.keydown(function() {
-				isKeyPressed = true;
-			});
-
-			input.keyup(function() {
-				if (!isPasteChange)
-					changeHandler();
-
-				isKeyPressed = isPasteChange = false;
-			});
-
-			input.on('paste', function(evt) {
-				isPasteChange = isKeyPressed;
-
-				$timeout.cancel(pasteTimeoutId);
-
-				pasteTimeoutId = $timeout(changeHandler, 100);
-			});
+			// jquery events
+			input.on('input', changeHandler);
 
 			input.focus(function() {
 				if (lastVal && lastVal.length >= options.minlength && !hasSelected)
@@ -193,6 +183,7 @@ angular.module('ng-pros.directive.autocomplete', [
 			angular.element(window).on('resize', resize);
 			angular.element(document).on('click keyup', blurHandler);
 
+			// scope methods
 			scope.select = function(item) {
 				close();
 
@@ -235,13 +226,19 @@ angular.module('ng-pros.directive.autocomplete', [
 				return $sce.trustAsHtml(result.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(regex, '<span class="np-autocomplete-match">$&</span>'));
 			};
 
+			// models watchers
 			if (attrs.npInputModel)
 				scope.$watch('npInputModel', function(val) {
-					input.val(typeof val === 'string' ? val : null);
+					$timeout.cancel(timeoutId);
+
+					if (!isInternalUpdate)
+						input.val(typeof val === 'string' ? val : null);
 				});
 
 			if (attrs.npSelectedItem)
 				scope.$watch('npSelectedItem', function(val) {
+					$timeout.cancel(timeoutId);
+
 					scope.npSelectedItem = val;
 
 					var model = val ? eval('val.' + options.valueAttr) : null;
@@ -253,10 +250,11 @@ angular.module('ng-pros.directive.autocomplete', [
 
 					if (attrs.npInputModel)
 						scope.npInputModel = inputModel;
-					else
+					else if (!isInternalUpdate)
 						input.val(inputModel);
 				});
 
+			// scope events
 			scope.$on('$destroy', function() {
 				angular.element(window).off('resize', resize);
 				angular.element(document).off('click keyup', blurHandler);

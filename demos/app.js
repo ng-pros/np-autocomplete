@@ -6,7 +6,8 @@ angular.module('app', ['ng-pros.directive.autocomplete'])
 		searchParam: 'q',
 		dataHolder: 'items',
 		limitParam: 'per_page',
-		loadingClass: 'has-feedback'
+		loadingClass: 'has-feedback',
+		delay: 1000
 	};
 
 	$timeout(function() {

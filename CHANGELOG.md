@@ -1,3 +1,6 @@
+## 1.0.5
+- Enh: replace keyup and paste jquery events with input.
+
 ## 1.0.4
 - Bug: updating input value when npInputModel or npSelectedItem is being programaticlly updated.
 
