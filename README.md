@@ -54,6 +54,7 @@ np-autocomplete | Yes | Passes options object to the directive.
 ng-model | No | Holds the value of an attribute of the selected item, e.g. "id".
 np-input-model | No | Holds the input element value.
 np-selected-item | No  | Holds the whole selected item object.
+np-auto | No  | A model which by updating it the following will happen: update np-input-model with its value, clear ng-model, make a request then flushes itself.
 
 ### Options:
 Attribute | Type | Required | Default Value | Example | Description
