@@ -1,7 +1,22 @@
-<div id="np-autocomplete-input"></div>
-<div class="list-group np-autocomplete-list" ng-style="inputBounds" ng-if="isOpened">
-	<button type="button" class="list-group-item" ng-if="!searchResults.length && !isLoading" ng-click="clear()">
-	{{npAutocomplete.noResultsMessage}}
+<div id="np-autocomplete-transclude"></div>
+<div id="np-do-not-touch" style="display: none;">
+	<button
+		type="button"
+		ng-click="clear()"
+		ng-class="options.messageClass"
+		ng-bind="options.noResultsMessage"
+		ng-if="!searchResults.length && !loading && !hasError">
 	</button>
-	<a class="list-group-item" ng-if="isLoading">{{npAutocomplete.loadingMessage}}</a>
+	<button
+		type="button"
+		ng-if="hasError && !loading"
+		ng-click="clear()"
+		ng-class="options.messageClass"
+		ng-bind="options.errorStateMessage">
+	</button>
+	<a
+		ng-if="loading"
+		ng-class="options.messageClass"
+		ng-bind="options.loadStateMessage">
+	</a>
 </div>

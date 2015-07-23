@@ -8,54 +8,59 @@
 		<link rel="stylesheet" href="../dist/np-autocomplete.min.css"/>
 		<style>
 			.glyphicon-refresh-animate {
-			-animation: spin .7s infinite linear;
-			-ms-animation: spin .7s infinite linear;
-			-webkit-animation: spinw .7s infinite linear;
-			-moz-animation: spinm .7s infinite linear;
+				-animation: spin .7s infinite linear;
+				-ms-animation: spin .7s infinite linear;
+				-webkit-animation: spinw .7s infinite linear;
+				-moz-animation: spinm .7s infinite linear;
 			}
 			
 			@keyframes spin {
-			from { transform: scale(1) rotate(0deg);}
-			to { transform: scale(1) rotate(360deg);}
+				from { transform: scale(1) rotate(0deg);}
+				to { transform: scale(1) rotate(360deg);}
 			}
 			
 			@-webkit-keyframes spinw {
-			from { -webkit-transform: rotate(0deg);}
-			to { -webkit-transform: rotate(360deg);}
+				from { -webkit-transform: rotate(0deg);}
+				to { -webkit-transform: rotate(360deg);}
 			}
 			
 			@-moz-keyframes spinm {
-			from { -moz-transform: rotate(0deg);}
-			to { -moz-transform: rotate(360deg);}
+				from { -moz-transform: rotate(0deg);}
+				to { -moz-transform: rotate(360deg);}
 			}
-			.form-group span.form-control-feedback {
+			.np-autocomplete-wrapper.form-group span.form-control-feedback {
 				display: none;
 			}
-			.form-group.has-feedback span.form-control-feedback {
+			.np-autocomplete-wrapper.has-feedback span.form-control-feedback {
 				display: block;
 			}
-			.np-autocomplete-wrapper.np-autocomplete-opened input.form-control {
+			.np-autocomplete-open input.form-control {
 				border-bottom-left-radius: 0;
 				border-bottom-right-radius: 0;
 			}
-			.np-autocomplete-list .list-group-item:first-child {
+			.np-autocomplete-open .list-group-item:first-child {
 				border-top-left-radius: 0;
 				border-top-right-radius: 0;
 			}
-		</style>
+			.np-autocomplete-wrapper .list-group-item.active strong {
+				text-shadow: none;
+			}
+		</style> 
 	</head>
 	<body>
 		<div class="container">
 			<div class="row">
 				<div class="col-sm-12 col-xs-12">
-					<form name="mainForm">
-						<div class="form-group" np-autocomplete="countriesOptions" ng-model="idModel" np-selected-item="selectedItem" ng-class="{'has-error': mainForm.$invalid}" required>
-							<label class="control-label">Country</label>
-							<input type="text" class="form-control">
-							<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate form-control-feedback" aria-hidden="true"></span>
-							<span id="inputSuccess2Status" class="sr-only">(success)</span>
+					{{idModel}}
+					<div class="form-group" np-autocomplete="options" np-input-model="inputModel" ng-model="idModel">
+						<div class="input-group">
+							<span class="input-group-btn">
+								<button class="btn btn-success" type="button" ng-click="programmaticallyLoad()">Load programmatically!</button>
+							</span>
+							<input type="text" placeholder="Search in Github repositories" class="form-control"/>
 						</div>
-					</form>
+						<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate form-control-feedback" aria-hidden="true"></span>
+					</div>
 				</div>
 			</div>
 		</div>

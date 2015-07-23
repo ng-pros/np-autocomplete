@@ -1,1 +1,7 @@
-<button type="button" class="list-group-item" ng-repeat="item in searchResults" ng-click="select(item)" ng-bind-html="match($eval('item.' + npAutocomplete.nameAttr))"></button>
+<button type="button"
+		ng-click="select(item)"
+		ng-class="getItemClasses($index)"
+		ng-repeat="item in searchResults"
+		ng-bind-html="highlight($eval('item.' + options.nameAttr))"
+		ng-mouseenter="onItemMouseenter($index)">
+</button>

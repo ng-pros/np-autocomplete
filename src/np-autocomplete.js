@@ -8,114 +8,157 @@ angular.module('ng-pros.directive.autocomplete', [
 		restrict: 'A',
 		transclude: true,
 		scope: {
+			npAuto: '=',
+			ngModel: '=',
 			npInputModel: '=',
 			npSelectedItem: '=',
-			npAutocomplete: '=',
+			npAutocomplete: '='
 		},
 		link: function(scope, element, attrs, ngModelCtrl, transclude) {
-
 			var id = attrs.id,
 				input = null,
 				lastVal = '',
 				template = null,
 				timeoutId = null,
+				skipWatch = false,
+				closeOnBlur = true,
 				listElement = null,
-				hasSelected = false,
 				itemTemplate = null,
-				isInternalUpdate = false,
+				hasSelection = false,
+				isListChange = false,
+				internalModelChange = false,
+				internalInputChange = false,
 				options = {
 					limit: 5,
 					delay: 500,
 					params: {},
 					nameAttr: 'name',
-					minlength: 2,
+					minlength: 1,
 					valueAttr: 'id',
+					listClass: 'list-group',
+					itemClass: 'list-group-item',
 					limitParam: 'limit',
 					templateUrl: 'np-autocomplete-template.tpl.html',
 					searchParam: 'search',
-					closedClass: 'np-autocomplete-closed',
-					openedClass: 'np-autocomplete-opened',
-					loadingClass: 'np-autocomplete-loading',
-					loadingMessage: 'Loading...',
+					loadStateMessage: 'Loading...',
+					messageClass: 'list-group-item',
+					errorStateMessage: 'Something went wrong.',
+					itemFocusClass: 'active',
+					highlightClass: 'bg-info text-info',
+					openStateClass: 'np-autocomplete-open',
+					loadStateClass: 'np-autocomplete-load',
+					errorStateClass: 'has-error',
+					closeStateClass: 'np-autocomplete-close',
 					itemTemplateUrl: 'np-autocomplete-item-template.tpl.html',
 					noResultsMessage: 'No results found.',
+					hasSelectionClass: 'has-success',
+					highlightExactSearch: true
 				},
 				open = function() {
-					$timeout(function() {
-						scope.isOpened = true;
+					resize();
 
-						element.removeClass(options.closedClass);
-						element.addClass(options.openedClass);
-					});
+					listElement.css('display', '');
+
+					element.removeClass(scope.options.closeStateClass);
+					element.addClass(scope.options.openStateClass);
 				},
 				close = function() {
-					$timeout(function() {
-						scope.isOpened = false;
+					listElement.css('display', 'none');
 
-						element.removeClass(options.openedClass);
-						element.addClass(options.closedClass);
-					});
+					element.removeClass(scope.options.openStateClass);
+					element.addClass(scope.options.closeStateClass);
 				},
-				deselect = function() {
-					hasSelected = false;
+				updateSelectionMode = function(valid) {
+					element.removeClass(scope.options.errorStateClass);
 
-					isInternalUpdate = true;
+					scope.hasError = false;
+
+					if (valid) {
+						element.addClass(scope.options.hasSelectionClass);
+
+						if (!hasSelection && scope.options.onSelect)
+							scope.options.onSelect(item);
+					} else {
+						element.removeClass(scope.options.hasSelectionClass);
+
+						if (hasSelection && scope.options.onDeselect)
+							scope.options.onDeselect();
+					}
+
+					hasSelection = valid;
+				},
+				flush = function() {
+					$timeout.cancel(timeoutId);
+
+					scope.focusedItemIndex = -1;
 
 					if (attrs.npSelectedItem)
 						scope.npSelectedItem = null;
 
-					if (attrs.ngModel)
+					if (attrs.ngModel) {
+						internalModelChange = true;
+
 						ngModelCtrl.$setViewValue();
-
-					isInternalUpdate = false;
-
-					if (options.onDeselect)
-						options.onDeselect();
+					} else
+						updateSelectionMode(false);
 				},
-				changeHandler = function() {
-					deselect();
+				updateInputModel = function() {
+					var val = input.val();
 
-					$timeout.cancel(timeoutId);
+					$timeout(function() {
+						if (attrs.npInputModel) {
+							internalInputChange = true;
+
+							scope.npInputModel = val;
+						}
+					});
+
+					return val;
+				},
+				changeHandler = function(evt) {
+					flush();
+
+					var val = updateInputModel();
 
 					timeoutId = $timeout(function() {
-						var val = input.val();
-
-						if (attrs.npInputModel)
-							scope.npInputModel = val;
-
-						if (val && val.length >= options.minlength) {
-							open();
-
+						if (val && val.length >= scope.options.minlength) {
 							if (val !== lastVal) {
+								scope.loading = true;
 								scope.searchResults = [];
 
-								scope.isLoading = true;
+								element.addClass(scope.options.loadStateClass);
 
-								element.addClass(options.loadingClass);
+								scope.options.params[scope.options.searchParam] = val;
 
-								options.params[options.searchParam] = val;
-
-								$http.get(options.url, {
-									params: options.params
+								$http.get(scope.options.url, {
+									params: scope.options.params
 								}).finally(function() {
-									scope.isLoading = false;
+									scope.loading = false;
 
-									element.removeClass(options.loadingClass);
+									element.removeClass(scope.options.loadStateClass);
 								}).then(function(response) {
 									var data = response.data;
 
-									if (options.dataHolder)
-										data = eval('data.' + options.dataHolder);
+									if (scope.options.dataHolder)
+										data = eval('data.' + scope.options.dataHolder);
 
-									if (options.each)
-										options.each(data);
+									if (scope.options.each)
+										scope.options.each(data);
 
 									scope.searchResults = data;
+
+									scope.focusedItemIndex = 0;
 								}).catch(function(data) {
-									if (options.onError)
-										options.onError(data);
+									scope.hasError = true;
+
+									element.addClass(scope.options.errorStateClass);
+
+									if (scope.options.onError)
+										scope.options.onError(data);
 								});
 							}
+
+							open();
 						} else {
 							close();
 
@@ -124,139 +167,234 @@ angular.module('ng-pros.directive.autocomplete', [
 
 						lastVal = val;
 
-					}, options.delay);
+					}, !evt ? 0 : scope.options.delay);
 				},
 				blurHandler = function(evt) {
-					if (!angular.element(evt.target).parents('#' + id).length)
-						close();
+					if (!angular.element.contains(listElement[0], evt.target) && !isListChange && input[0] !== evt.target) {
+
+						if (closeOnBlur)
+							close();
+
+						if (scope.options.onBlur)
+							scope.options.onBlur();
+					} else
+						input.focus();
+
+					isListChange = false;
+
+					closeOnBlur = true;
+				},
+				focusHandler = function() {
+					if (lastVal && lastVal.length >= scope.options.minlength && !hasSelection)
+						open();
 				},
 				resize = function() {
 					$timeout(function() {
-						scope.inputBounds = {
-							'top': input.position().top + input.outerHeight(),
+						var inputOffset = input.offset();
+
+						listElement.css({
+							'top': inputOffset.top + input.outerHeight() - angular.element(document).scrollTop(),
+							'left': inputOffset.left,
 							'width': input.outerWidth()
-						};
+						});
 					});
+				},
+				focusNextListItem = function() {
+					scope.focusedItemIndex = scope.focusedItemIndex < 0 ? 0 : ++scope.focusedItemIndex % scope.searchResults.length;
 				};
 
-			// merge options with defaults
-			scope.npAutocomplete = angular.extend(options, scope.npAutocomplete);
+			// merge options with defaults and initial scope variables.
+			scope.options = angular.extend({}, options, scope.npAutocomplete);
+			scope.searchResults = [];
+			scope.focusedItemIndex = -1;
 
-			options.delay = options.delay > 100 ? options.delay : 100;
-			options.params[options.limitParam] = options.limit;
+			scope.options.delay = scope.options.delay > 100 ? scope.options.delay : 100;
+			scope.options.params[scope.options.limitParam] = scope.options.limit;
 
-			// set directive id if has been not setting
+			// set directive id if it has not been set.
 			if (!id) {
 				id = 'np-autocomplete-' + Date.now();
 				element.attr('id', id);
 			}
 
-			// add default classes
-			element.addClass('np-autocomplete-wrapper');
-			element.addClass(options.closedClass);
+			// configure template.
+			template = angular.element(scope.options.template || $templateCache.get(scope.options.templateUrl));
 
-			// configure template
-			template = angular.element(options.template || $templateCache.get(options.templateUrl));
+			itemTemplate = scope.options.itemTemplate || $templateCache.get(scope.options.itemTemplateUrl);
 
-			itemTemplate = options.itemTemplate || $templateCache.get(options.itemTemplateUrl);
-
-			listElement = template.closest('.np-autocomplete-list');
+			listElement = template.closest('#np-do-not-touch');
+			listElement.removeAttr('id');
+			listElement.addClass(scope.options.listClass);
 			listElement.append(itemTemplate);
 
 			element.html($compile(template)(scope));
-			element.find('#np-autocomplete-input').replaceWith(transclude());
+			element.find('#np-autocomplete-transclude').replaceWith(transclude());
+			element.addClass('np-autocomplete-wrapper');
+			element.addClass(scope.options.closeStateClass);
 
-			// find input element
+			// find input element.
 			input = element.find('input');
 
-			// resize list once
+			// resize list once.
 			resize();
 
-			// jquery events
-			input.on('input', changeHandler);
+			// jquery events.
+			input.on('input', null, null, changeHandler);
 
-			input.focus(function() {
-				if (lastVal && lastVal.length >= options.minlength && !hasSelected)
-					open();
+			input.keydown(function(evt) {
+				var preventDefault = false;
+
+				if (!scope.loading && scope.searchResults.length) {
+
+					preventDefault = true;
+
+					switch (evt.keyCode) {
+						case 38:
+							scope.focusedItemIndex = scope.focusedItemIndex < 1 ? scope.searchResults.length - 1 : scope.focusedItemIndex - 1;
+							break;
+
+						case 40:
+							focusNextListItem();
+							break;
+
+						case 13:
+							scope.select(scope.searchResults[scope.focusedItemIndex]);
+							break;
+
+						case 9:
+							focusNextListItem();
+							break;
+
+						default:
+							preventDefault = false;
+							break;
+					}
+				}
+
+				if (!scope.$$phase)
+					scope.$apply();
+
+				if (preventDefault)
+					evt.preventDefault();
 			});
 
-			angular.element(window).on('resize', resize);
+			input.focus(focusHandler);
+
+			angular.element(window).on('resize scroll', resize);
 			angular.element(document).on('click keyup', blurHandler);
 
-			// scope methods
+			// scope methods.
 			scope.select = function(item) {
+				$timeout.cancel(timeoutId);
+
+				isListChange = true;
+
 				close();
 
-				hasSelected = true;
-
-				var val = options.clearOnSelect ? '' : eval('item.' + options.nameAttr);
-
-				input.val(lastVal = val);
-
 				if (attrs.ngModel)
-					ngModelCtrl.$setViewValue(eval('item.' + options.valueAttr));
+					ngModelCtrl.$setViewValue(eval('item.' + scope.options.valueAttr));
+				else
+					updateSelectionMode(true);
+
+				var val = scope.options.clearOnSelect ? '' : eval('item.' + scope.options.nameAttr);
 
 				if (attrs.npInputModel)
-					scope.npInputModel = val;
+					scope.npInputModel = lastVal = val;
+				else
+					input.val(lastVal = val);
 
 				if (attrs.npSelectedItem)
 					scope.npSelectedItem = item;
 
-				if (options.onSelect)
-					options.onSelect(item);
+				var searchResultsLength = scope.searchResults.length;
+
+				for (var i = searchResultsLength - 1; i >= 0; i--) {
+					if (angular.equals(item, scope.searchResults[i]))
+						scope.searchResults = scope.searchResults.splice(i, 1);
+				}
 			};
 
 			scope.clear = function() {
+				isListChange = true;
+
 				close();
 
-				if (attrs.npInputModel)
-					scope.npInputModel = null;
+				flush();
 
-				lastVal = '';
+				if (attrs.npInputModel) {
+					scope.npInputModel = lastVal = '';
+				} else
+					input.val(lastVal = '');
 
-				input.val('');
-
-				input.focus();
+				scope.searchResults = [];
 			};
 
-			scope.match = function(val) {
-				var regex = new RegExp(lastVal.trim().replace(/([{}()[\]\\.?*+^$|=!:~-])/g, '\\$1'), 'ig'),
+			scope.highlight = function(val) {
+				var pattern = input.val().trim().replace(/([{}()[\]\\.?*+^$|=!:~-])/g, '\\$1'),
+					regex = new RegExp(scope.options.highlightExactSearch ? pattern : pattern.replace(/\s+/, '|'), 'ig'),
 					result = val ? val : '';
 
-				return $sce.trustAsHtml(result.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(regex, '<span class="np-autocomplete-match">$&</span>'));
+				return $sce.trustAsHtml(result.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(regex, '<mark class="' + scope.options.highlightClass + '">$&</mark>'));
 			};
 
-			// models watchers
+			scope.onItemMouseenter = function(index) {
+				scope.focusedItemIndex = index;
+			};
+
+			scope.getItemClasses = function(index) {
+				var classes = {};
+
+				classes[scope.options.itemClass] = scope.options.itemClass;
+				classes[scope.options.itemFocusClass] = scope.options.itemFocusClass && index === scope.focusedItemIndex;
+
+				return classes;
+			};
+
+			// models watchers.
+			if (attrs.ngModel)
+				scope.$watch('ngModel', function(val) {
+					if (!internalModelChange) {
+						$timeout.cancel(timeoutId);
+
+						close();
+					}
+
+					internalModelChange = false;
+
+					updateSelectionMode(!!val);
+				});
+
 			if (attrs.npInputModel)
 				scope.$watch('npInputModel', function(val) {
-					$timeout.cancel(timeoutId);
+					if (!internalInputChange)
+						input.val(lastVal = val);
 
-					if (!isInternalUpdate)
-						input.val(typeof val === 'string' ? val : null);
+					internalInputChange = false;
 				});
 
-			if (attrs.npSelectedItem)
-				scope.$watch('npSelectedItem', function(val) {
-					$timeout.cancel(timeoutId);
+			if (attrs.npAuto)
+				scope.$watch('npAuto', function(val) {
+					if (!skipWatch) {
+						skipWatch = true;
 
-					scope.npSelectedItem = val;
+						scope.npAuto = null;
 
-					var model = val ? eval('val.' + options.valueAttr) : null;
+						if (val !== input.val()) {
+							input.val(val);
 
-					if (attrs.ngModel)
-						ngModelCtrl.$setViewValue(model);
+							changeHandler();
+						} else {
+							closeOnBlur = false;
 
-					var inputModel = val ? eval('val.' + options.nameAttr) : null;
-
-					if (attrs.npInputModel)
-						scope.npInputModel = inputModel;
-					else if (!isInternalUpdate)
-						input.val(inputModel);
+							focusHandler();
+						}
+					} else
+						skipWatch = false;
 				});
 
-			// scope events
+			// scope events.
 			scope.$on('$destroy', function() {
-				angular.element(window).off('resize', resize);
+				angular.element(window).off('resize scroll', resize);
 				angular.element(document).off('click keyup', blurHandler);
 			});
 		}

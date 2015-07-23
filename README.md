@@ -7,7 +7,7 @@ Np-autocomplete is a full-functional autocomplete (typeahead alternative) Angula
 - Provides 3 models: ngModel, input model and the selected item.
 - Uses the transclusion, which gives the flexibility with the input element.
 - Customizable in the way you like.
-- Multiple states (closed, opened and loading).
+- Multiple states (close, open, load and error).
 
 ### Requirements:
 - JQuery 2.1.4+.
@@ -15,7 +15,7 @@ Np-autocomplete is a full-functional autocomplete (typeahead alternative) Angula
 - Bootstrap 3.3.5+ (for default template).
 
 ### Getting Started:
-Download the package, then include **dist/np-autocomplete.min.js** and **dist/np-autocomplete.min.css** in your page.
+Download the package, then include `dist/np-autocomplete.min.js` and `dist/np-autocomplete.min.css` in your page.
 ```
 bower install np-autocomplete --save
 ```
@@ -26,6 +26,8 @@ angular.module('yourModule', [
   ...
 ]);
 ```
+
+**Note:** if you were using version `1.0.x` then refer to [CHANGELOG](https://github.com/ng-pros/np-autocomplete/blob/master/CHANGELOG.md).
 
 ### Quick Usage:
 ##### html:
@@ -63,18 +65,30 @@ limit | Integer | No | 5 | 10 | Sets the value of the limit query param.
 limitParam | String | No | limit | per_page | Query param holds the limit value in requests.
 searchParam | String | No | search | query | Query param holds the search text in requests.
 delay | Integer | No | 500 (ms) | 1000 (ms) | Time in milliseconds which delays request after changing the search text.
-minlength | Integer | No | 2 | 5 | The minimum length of string required before start searching.
+minlength | Integer | No | 1 | 5 | The minimum length of string required before start searching.
 dataHoder | String | No |  | items | The name of the field in the retrieved data which holds the array of objects those will be used for the autocomplete.
 clearOnSelect | Boolean | No | false | true | Either clear the search text after selecting an item or not.
-template (HTML) | String | No |  |  | Overrides the default template.
+programmaticallyLoad | Boolean | No | false | true | allow programmatically load or not.
+highlightExactSearch | Boolean | No | true | false | either highlight with exact pattern or each portion separately.
+template | String (HTML) | No |  |  | Overrides the default template.
 templateUrl | String | No |  |  | Gets template with $templateCache to overrides the default template.
-itemTemplate (HTML) | String | No |  |  | Overrides the default template of the list item.
+itemTemplate | String (HTML) | No |  |  | Overrides the default template of the list item.
 itemTemplateUrl | String | No |  |  | Gets template with $templateCache to overrides the default template of the list item.
 params | Object | No |  | `{ sort: 'stars' }` | Extra params to send with each request.
-closedClass | String | No | np-autocomplete-closed | np-autocomplete-closed closed1 | Class(es) to be added to directive in 'closed' state.
-openedClass | String | No | np-autocomplete-opened | np-autocomplete-opened opened1 | Class(es) to be added to directive in 'opened' state.
-loadingClass | String | No | np-autocomplete-loading | np-autocomplete-loading loading1 | Class(es) to be added to directive in 'loading' state.
+errorMessage | String | No | Something went wrong. | An error occurred. | A message to be shown when an error occur.
+noResultsMessage | String | No | No results found. | Couldn't find anything. | A message to be shown when no results found.
+listClass | String | No | list-group | list-group np-list | Class(es) to be added to the list.
+itemClass | String | No | list-group-item | list-group-item np-list-item | Class(es) to be added to each item in the list.
+messageClass | String | No | list-group-item | list-group-item np-message-item | Class(es) to be added to each message item.
+highlightClass | String | No | bg-info text-info | np-highlight | Class(es) to be added to the highlighted text.
+itemFocusClass | String | No | active | np-active | Class(es) to be added to the focused item.
+hasSelectionClass | String | No | np-autocomplete-has-selection | has-selection | Class(es) to be added to the directive wrapper when a selection made.
+openStateClass | String | No | np-autocomplete-open | np-autocomplete-open open-state | Class(es) to be added to the directive wrapper in 'open' state.
+loadStateClass | String | No | np-autocomplete-load | np-autocomplete-load load-state | Class(es) to be added to the directive wrapper in 'load' state.
+closeStateClass | String | No | np-autocomplete-close | np-autocomplete-close close-state | Class(es) to be added to the directive wrapper in 'closed' state.
+errorStateClass | String | No | np-autocomplete-error | np-autocomplete-error error-state | Class(es) to be added to the directive wrapper in 'load' state.
 each | Function | No |  | `function(item) {`<br>`console.log(item);`<br>`}` | Iterates over elements of retrived data.
+onBlur | Function | No |  | `function() {`<br>`console.log('focus lost');`<br>`}` | a callback function called when the directive loses focus.
+onError | Function | No |  | `function(errorData) {`<br>`console.log(errorData);`<br>`}` | A callback function called when an error occur.
 onSelect | Function | No |  | `function(item) {`<br>`console.log(item);`<br>`}` | A callback function called when a selection is made.
 onDeselect |Function | No |  | `function() {`<br>`console.log('Lost selection');`<br>`}` | A callback function called when the selection is lost.
-onError | Function | No |  | `function(errorData) {`<br>`console.log(errorData);`<br>`}` | A callback function called when an error occurred.
