@@ -1,3 +1,8 @@
+## 2.0.1
+- Bug:
+  - change the position of list element to `absolute`.
+  - unset error state over input change.
+
 ## 2.0.0
 - Bug:
   - fix resize and repositioning on window resize functionality.

@@ -45,14 +45,15 @@
 			.np-autocomplete-wrapper .list-group-item.active strong {
 				text-shadow: none;
 			}
-		</style> 
+		</style>
 	</head>
 	<body>
 		<div class="container">
 			<div class="row">
 				<div class="col-sm-12 col-xs-12">
-					{{idModel}}
-					<div class="form-group" np-autocomplete="options" np-input-model="inputModel" ng-model="idModel">
+					{{idModel}} -- {{inputModel}}
+					<!-- <label class="control-label">test:</label> -->
+					<div class="form-group" np-autocomplete="options" np-input-model="inputModel" ng-model="idModel" np-auto="autoModel">
 						<div class="input-group">
 							<span class="input-group-btn">
 								<button class="btn btn-success" type="button" ng-click="programmaticallyLoad()">Load programmatically!</button>
@@ -60,6 +61,7 @@
 							<input type="text" placeholder="Search in Github repositories" class="form-control"/>
 						</div>
 						<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate form-control-feedback" aria-hidden="true"></span>
+						<p class="help-block">raeef</p>
 					</div>
 				</div>
 			</div>

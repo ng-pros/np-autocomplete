@@ -25,11 +25,16 @@
     "grunt-contrib-clean": "~0.6.0",
     "grunt-contrib-concat": "~0.5.1",
     "grunt-contrib-copy": "~0.8.0",
+    "grunt-contrib-less": "~1.0.1",
     "grunt-contrib-uglify": "~0.9.1",
     "grunt-contrib-watch": "~0.6.1",
-    "grunt-contrib-less": "~1.0.1",
     "grunt-html2js": "~0.3.2",
-    "grunt-ng-annotate": "~1.0.1"
+    "grunt-ng-annotate": "~1.0.1",
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.13.3",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-jasmine": "^0.3.6",
+    "karma-jasmine-html-reporter": "^0.1.8"
   },
   "license": "MIT"
 }

@@ -5,6 +5,7 @@ angular.module('app', ['ng-pros.directive.autocomplete'])
 	$scope.options = {
 		url: 'https://api.github.com/search/repositories',
 		delay: 0,
+		minlength: 1,
 		nameAttr: 'name',
 		dataHolder: 'items',
 		limitParam: 'per_page',
@@ -26,7 +27,7 @@ angular.module('app', ['ng-pros.directive.autocomplete'])
 	};
 
 	$scope.programmaticallyLoad = function() {
-		$scope.inputModel = 'np-autocomplete';
+		$scope.autoModel = 'np-autocomplete';
 	};
 
 	// $scope.inputModel = 'asdf'
