@@ -1,8 +1,11 @@
 angular.module('ng-pros.directive.autocomplete', [
-	"templates-npAutocomplete"
+	'templates-npAutocomplete'
 ])
 
 .directive('npAutocomplete', ['$timeout', '$http', '$compile', '$templateCache', '$sce', function($timeout, $http, $compile, $templateCache, $sce) {
+
+	'use strict';
+
 	return {
 		require: '?ngModel',
 		restrict: 'A',
