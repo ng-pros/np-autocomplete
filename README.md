@@ -4,7 +4,8 @@ Np-autocomplete is a full-functional autocomplete (typeahead alternative) Angula
 ### Key Features:
 - The easiest to setup.
 - 100% compatible and optimised by default for bootstrap 3.3.5+
-- Provides 3 models: ngModel, input model and the selected item.
+- Provides 4 models: `ngModel`, `npInputModel`, `npAuto` and `selectedItem`.
+- You are free to use built-in angular directives such `ngForm` and `ngRequired`.
 - Uses the transclusion, which gives the flexibility with the input element.
 - Customizable in the way you like.
 - Multiple states (close, open, load and error).

@@ -1,6 +1,6 @@
 {
   "name": "np-autocomplete",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Full-functional autocomplete (typeahead alternative) AngularJS directive",
   "repository": {
     "type": "git",

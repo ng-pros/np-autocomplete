@@ -25,9 +25,9 @@ angular.module('ng-pros.directive.autocomplete', [
         listElement = null,
         itemTemplate = null,
         hasSelection = false,
+        isBlurHandlerActive = true,
         internalModelChange = false,
         internalInputChange = false,
-        isBlurHandlerActive = true,
         isFocusHandlerActive = true,
         options = {
           limit: 5,
@@ -41,9 +41,7 @@ angular.module('ng-pros.directive.autocomplete', [
           limitParam: 'limit',
           templateUrl: 'np-autocomplete-template.tpl.html',
           searchParam: 'search',
-          loadStateMessage: 'Loading...',
           messageClass: 'list-group-item',
-          errorStateMessage: 'Something went wrong.',
           itemFocusClass: 'active',
           highlightClass: 'bg-info text-info',
           openStateClass: 'np-autocomplete-open',
@@ -52,6 +50,8 @@ angular.module('ng-pros.directive.autocomplete', [
           closeStateClass: 'np-autocomplete-close',
           itemTemplateUrl: 'np-autocomplete-item-template.tpl.html',
           noResultsMessage: 'No results found.',
+          loadStateMessage: 'Loading...',
+          errorStateMessage: 'Something went wrong.',
           hasSelectionClass: 'has-success',
           highlightExactSearch: true
         },
@@ -145,8 +145,12 @@ angular.module('ng-pros.directive.autocomplete', [
                 if (scope.options.dataHolder)
                   data = eval('data.' + scope.options.dataHolder);
 
-                if (scope.options.each)
-                  scope.options.each(data);
+                if (scope.options.each) {
+                  var resultsLength = data.length;
+
+                  for (var i = 0; i < resultsLength; i++)
+                    scope.options.each(data[i]);
+                }
 
                 scope.searchResults = data;
 

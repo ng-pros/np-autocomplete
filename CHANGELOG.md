@@ -1,3 +1,6 @@
+## 2.0.2
+- Bug: fix `each` iterator.
+
 ## 2.0.1
 - Bug:
   - change the position of list element to `absolute`.
