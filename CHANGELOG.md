@@ -1,3 +1,7 @@
+## 2.0.3
+- Enh: require `angular` when use with `CommonJS` or `AMD`.
+- Enh: add the css to the main in `bower.json` to be `wiredep` friendly.
+
 ## 2.0.2
 - Bug: fix `each` iterator.
 

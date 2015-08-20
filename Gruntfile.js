@@ -1,94 +1,63 @@
+'use strict';
+
 module.exports = function(grunt) {
 
-	grunt.loadNpmTasks('grunt-html2js');
-	grunt.loadNpmTasks('grunt-ng-annotate');
-	grunt.loadNpmTasks('grunt-contrib-less');
-	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
+  require('jit-grunt')(grunt);
 
-	var taskConfig = {
+  var taskConfig = {
+    pkg: grunt.file.readJSON('package.json'),
 
-		pkg: grunt.file.readJSON("package.json"),
+    clean: {
+      all: [
+      'dist/*'
+      ]
+    },
 
-		clean: {
-			all: [
-				'dist/*'
-			],
-			templates: [
-				'dist/templates.js'
-			]
-		},
+    less: {
+      options: {
+        compress: true
+      },
 
-		html2js: {
-			npAutocomplete: {
-				options: {
-					base: 'src'
-				},
-				src: ['src/**/*.tpl.html'],
-				dest: 'dist/templates.js'
-			}
-		},
+      npAutocomplete: {
+        files: {
+          'dist/np-autocomplete.min.css': ['src/np-autocomplete.less']
+        }
+      }
+    },
 
-		less: {
-			options: {
-				compress: true
-			},
+    ngAnnotate: {
+      npAutocomplete: {
+        files: [{
+          src: ['src/np-autocomplete.js'],
+          dest: 'dist/np-autocomplete.min.js'
+        }]
+      }
+    },
 
-			npAutocomplete: {
-				files: {
-					'dist/np-autocomplete.min.css': ['src/np-autocomplete.less']
-				}
-			}
-		},
+    uglify: {
+      npAutocomplete: {
+        files: [{
+          'dist/np-autocomplete.min.js': 'dist/np-autocomplete.min.js'
+        }]
+      }
+    },
 
-		concat: {
-			npAutocomplete: {
-				src: [
-					'module.prefix',
-					'src/np-autocomplete.js',
-					'<%= html2js.npAutocomplete.dest %>',
-					'module.suffix'
-				],
-				dest: 'dist/np-autocomplete.min.js'
-			}
-		},
+    watch: {
+      scripts: {
+        options: {
+          livereload: true,
+          spawn: false
+        },
+        files: [
+        'src/*',
+        'demos/*'
+        ],
+        tasks: ['compile']
+      }
+    }
+  };
 
-		ngAnnotate: {
-			npAutocomplete: {
-				files: [{
-					src: ['dist/np-autocomplete.min.js'],
-					dest: 'dist/np-autocomplete.min.js'
-				}]
-			}
-		},
-
-		uglify: {
-			npAutocomplete: {
-				files: [{
-					'<%= concat.npAutocomplete.dest %>': '<%= concat.npAutocomplete.dest %>'
-				}]
-			}
-		},
-
-		watch: {
-			scripts: {
-				options: {
-					livereload: true,
-					spawn: false
-				},
-				files: [
-					'src/*',
-					'demos/*'
-				],
-				tasks: ['html2js', 'concat', 'ngAnnotate', 'less', 'clean:templates']
-			}
-		}
-	};
-
-	grunt.initConfig(grunt.util._.extend(taskConfig));
-
-	grunt.registerTask('compile', ['clean:all', 'html2js', 'concat', 'less', 'clean:templates', 'ngAnnotate', 'uglify']);
-	grunt.registerTask('default', ['compile']);
+  grunt.initConfig(grunt.util._.extend(taskConfig));
+  grunt.registerTask('compile', ['clean', 'less', 'ngAnnotate', 'uglify']);
+  grunt.registerTask('default', ['compile']);
 };

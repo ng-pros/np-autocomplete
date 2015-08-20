@@ -3,3 +3,5 @@
 
 .sublmie*
 *.sublime*
+
+.DS_Store
