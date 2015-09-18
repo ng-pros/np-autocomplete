@@ -70,7 +70,6 @@ delay | Integer | No | 500 (ms) | 1000 (ms) | Time in milliseconds which delays 
 minlength | Integer | No | 1 | 5 | The minimum length of string required before start searching.
 dataHoder | String | No |  | items | The name of the field in the retrieved data which holds the array of objects those will be used for the autocomplete.
 clearOnSelect | Boolean | No | false | true | Either clear the search text after selecting an item or not.
-programmaticallyLoad | Boolean | No | false | true | allow programmatically load or not.
 highlightExactSearch | Boolean | No | true | false | either highlight with exact pattern or each portion separately.
 template | String (HTML) | No |  |  | Overrides the default template.
 templateUrl | String | No |  |  | Gets template with $templateCache to overrides the default template.
