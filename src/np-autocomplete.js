@@ -312,7 +312,7 @@
         input.keydown(function(evt) {
           var preventDefault = false;
 
-          if (!scope.loading && scope.searchResults.length) {
+          if (!scope.loading && scope.searchResults.length && !hasSelection) {
 
             preventDefault = true;
 

@@ -1,3 +1,6 @@
+## 2.0.4
+- Bug: fixes #2
+
 ## 2.0.3
 - Enh: require `angular` when use with `CommonJS` or `AMD`.
 - Enh: add the css to the main in `bower.json` to be `wiredep` friendly.
