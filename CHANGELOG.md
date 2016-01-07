@@ -1,5 +1,8 @@
+## 2.1.0
+- New #4: `queryMode` param which determines if the `searchParam` will be in query mode or a param mode.
+
 ## 2.0.4
-- Bug: fixes #2
+- Bug: fixes #2.
 
 ## 2.0.3
 - Enh: require `angular` when use with `CommonJS` or `AMD`.

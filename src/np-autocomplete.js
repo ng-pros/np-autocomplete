@@ -85,6 +85,7 @@
           valueAttr: 'id',
           listClass: 'list-group',
           itemClass: 'list-group-item',
+          queryMode: true,
           limitParam: 'limit',
           templateUrl: 'np-autocomplete/template.tpl.html',
           searchParam: 'search',
@@ -186,9 +187,15 @@
 
               open();
 
-              scope.options.params[scope.options.searchParam] = val;
+              var url = scope.options.url;
 
-              $http.get(scope.options.url, {
+              if (scope.options.queryMode) {
+                scope.options.params[scope.options.searchParam] = val;
+              } else {
+                url = url.replace(new RegExp(':searchParam', 'g'), val);
+              }
+
+              $http.get(url, {
                 params: scope.options.params
               }).finally(function() {
                 scope.loading = false;

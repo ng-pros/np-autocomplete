@@ -60,12 +60,13 @@ np-auto | No  | A model which by updating it the following will happen: update n
 ### Options:
 Attribute | Type | Required | Default Value | Example | Description
 :-------- | :--- | :------- | :------------ | :------ | :----------
-url | String | Yes |  | https://api.github.com/search/repositories | Data source url.
+url | String | Yes |  | http://example.com | Data source url.
 nameAttr | String | No | name | full_name | Defines the attribute which will be shown in the list (usually, it is the search field).
 valueAttr | String | No | id | downloads_url | Defines the attribute which will be assigned to the ng-model attribute.
 limit | Integer | No | 5 | 10 | Sets the value of the limit query param.
 limitParam | String | No | limit | per_page | Query param holds the limit value in requests.
 searchParam | String | No | search | query | Query param holds the search text in requests.
+queryMode | Boolean | No | true | false | Determines if the `searchParam` will be in query mode or a param mode, in case it's been set to `false (param mode)` then you should include `:searchParam` in your url where the search value should goes.
 delay | Integer | No | 500 (ms) | 1000 (ms) | Time in milliseconds which delays request after changing the search text.
 minlength | Integer | No | 1 | 5 | The minimum length of string required before start searching.
 dataHoder | String | No |  | items | The name of the field in the retrieved data which holds the array of objects those will be used for the autocomplete.
