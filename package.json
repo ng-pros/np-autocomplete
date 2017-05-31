@@ -19,7 +19,13 @@
   "bugs": {
     "url": "https://github.com/ng-pros/np-autocomplete/issues"
   },
+  "style": "dist/np-autocomplete.min.css",
+  "main": "dist/np-autocomplete.min.js",
   "homepage": "https://github.com/ng-pros/np-autocomplete",
+  "dependencies": {
+    "jquery": "~2.1",
+    "angular": "~1.3"
+  }
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-contrib-clean": "~0.6.0",
