@@ -47,7 +47,7 @@
       '  ng-click="select(item)"' +
       '  ng-class="getItemClasses($index)"' +
       '  ng-repeat="item in searchResults"' +
-      '  ng-bind-html="highlight($eval(\'item.\' + options.nameAttr))"' +
+      '  ng-bind-html="highlight($eval(\'item[\' + ((typeof(options.nameAttr) == \'string\') ? \'\\\'\' + options.nameAttr + \'\\\'\' : options.nameAttr) + \']\'))"' +
       '  ng-mouseenter="onItemMouseenter($index)">' +
       '</button>'
     );
@@ -369,12 +369,12 @@
           if (attrs.ngModel) {
             internalModelChange = true;
 
-            ngModelCtrl.$setViewValue(eval('item.' + scope.options.valueAttr));
+            ngModelCtrl.$setViewValue(item[scope.options.valueAttr]);
           }
 
           updateSelectionMode(true, item);
 
-          var val = scope.options.clearOnSelect ? '' : eval('item.' + scope.options.nameAttr);
+          var val = scope.options.clearOnSelect ? '' : item[scope.options.nameAttr];
 
           if (attrs.npInputModel) {
             scope.npInputModel = val;
