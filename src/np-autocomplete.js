@@ -378,9 +378,9 @@
 
           if (attrs.npInputModel) {
             scope.npInputModel = val;
-          } else {
-            input.val(val);
           }
+
+          input.val(val);
 
           if (attrs.npSelectedItem) {
             scope.npSelectedItem = item;
