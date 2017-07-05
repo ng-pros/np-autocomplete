@@ -71,7 +71,7 @@
         var listElement = null;
         var itemTemplate = null;
         var hasSelection = false;
-        var isBlurHandlerActive = true;
+        var isBlurHandlerActive = false;
         var internalModelChange = false;
         var internalInputChange = false;
         var isFocusHandlerActive = true;
@@ -240,9 +240,11 @@
             if (scope.options.onBlur) {
               scope.options.onBlur();
             }
+            isBlurHandlerActive = false;
+          } else if (input[0] == evt.target) {
+            isBlurHandlerActive = true;
           }
 
-          isBlurHandlerActive = true;
         };
 
         var focusHandler = function() {
@@ -386,7 +388,7 @@
             scope.npSelectedItem = item;
           }
 
-          isFocusHandlerActive = isBlurHandlerActive = false;
+          isFocusHandlerActive = false;
 
           input.focus();
         };
