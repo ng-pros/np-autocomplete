@@ -68,10 +68,10 @@
         var input = null;
         var template = null;
         var timeoutId = null;
+        var closeTimeoutId = null;
         var listElement = null;
         var itemTemplate = null;
         var hasSelection = false;
-        var isBlurHandlerActive = false;
         var internalModelChange = false;
         var internalInputChange = false;
         var isFocusHandlerActive = true;
@@ -233,18 +233,17 @@
           }
         };
 
-        var blurHandler = function(evt) {
-          if (isBlurHandlerActive && !angular.element.contains(listElement[0], evt.target) && input[0] !== evt.target) {
+        var focusoutHandler = function(evt) {
+          closeTimeoutId = $timeout(function() {
             close();
-
             if (scope.options.onBlur) {
               scope.options.onBlur();
             }
-            isBlurHandlerActive = false;
-          } else if (input[0] == evt.target) {
-            isBlurHandlerActive = true;
-          }
+          }, scope.options.delay + 100);
+        };
 
+        var focusinHandler = function(evt) {
+          $timeout.cancel(closeTimeoutId);
         };
 
         var focusHandler = function() {
@@ -360,7 +359,8 @@
         input.focus(focusHandler);
 
         angular.element(window).on('resize', resize);
-        angular.element(document).on('click keyup', blurHandler);
+        angular.element(element).on('focusin', focusinHandler);
+        angular.element(element).on('focusout', focusoutHandler);
 
         // scope methods.
         scope.select = function(item) {
@@ -467,8 +467,6 @@
                 isFocusHandlerActive = false;
               }
 
-              isBlurHandlerActive = false;
-
               input.focus();
             }
           });
@@ -477,7 +475,8 @@
         // scope events.
         scope.$on('$destroy', function() {
           angular.element(window).off('resize', resize);
-          angular.element(document).off('click keyup', blurHandler);
+          angular.element(element).off('focusin', focusinHandler);
+          angular.element(element).off('focusout', focusoutHandler);
         });
       }
     };
