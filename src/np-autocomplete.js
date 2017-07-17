@@ -302,7 +302,9 @@
         listElement.append(itemTemplate);
 
         element.html($compile(template)(scope));
-        element.find('#np-autocomplete-transclude').replaceWith(transclude());
+        transclude(scope, function(clone) {
+            element.find('#np-autocomplete-transclude').replaceWith(clone);
+        });
         element.addClass('np-autocomplete-wrapper');
         element.addClass(scope.options.closeStateClass);
 
