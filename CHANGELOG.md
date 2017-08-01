@@ -1,3 +1,7 @@
+## 2.2.0-beta.0
+- New: `nameAttr` and `valueAttr` support integer value.
+- Bug: fixes #7.
+
 ## 2.1.0
 - New #4: `queryMode` param which determines if the `searchParam` will be in query mode or a param mode.
 
