@@ -47,7 +47,7 @@
       '  ng-click="select(item)"' +
       '  ng-class="getItemClasses($index)"' +
       '  ng-repeat="item in searchResults"' +
-      '  ng-bind-html="highlight($eval(\'item.\' + options.nameAttr))"' +
+      '  ng-bind-html="highlight($eval(\'item[\' + ((typeof(options.nameAttr) == \'string\') ? \'\\\'\' + options.nameAttr + \'\\\'\' : options.nameAttr) + \']\'))"' +
       '  ng-mouseenter="onItemMouseenter($index)">' +
       '</button>'
     );
@@ -68,10 +68,10 @@
         var input = null;
         var template = null;
         var timeoutId = null;
+        var closeTimeoutId = null;
         var listElement = null;
         var itemTemplate = null;
         var hasSelection = false;
-        var isBlurHandlerActive = true;
         var internalModelChange = false;
         var internalInputChange = false;
         var isFocusHandlerActive = true;
@@ -233,16 +233,17 @@
           }
         };
 
-        var blurHandler = function(evt) {
-          if (isBlurHandlerActive && !angular.element.contains(listElement[0], evt.target) && input[0] !== evt.target) {
+        var focusoutHandler = function(evt) {
+          closeTimeoutId = $timeout(function() {
             close();
-
             if (scope.options.onBlur) {
               scope.options.onBlur();
             }
-          }
+          }, scope.options.delay + 100);
+        };
 
-          isBlurHandlerActive = true;
+        var focusinHandler = function(evt) {
+          $timeout.cancel(closeTimeoutId);
         };
 
         var focusHandler = function() {
@@ -301,7 +302,9 @@
         listElement.append(itemTemplate);
 
         element.html($compile(template)(scope));
-        element.find('#np-autocomplete-transclude').replaceWith(transclude());
+        transclude(scope, function(clone) {
+            element.find('#np-autocomplete-transclude').replaceWith(clone);
+        });
         element.addClass('np-autocomplete-wrapper');
         element.addClass(scope.options.closeStateClass);
 
@@ -358,7 +361,8 @@
         input.focus(focusHandler);
 
         angular.element(window).on('resize', resize);
-        angular.element(document).on('click keyup', blurHandler);
+        angular.element(element).on('focusin', focusinHandler);
+        angular.element(element).on('focusout', focusoutHandler);
 
         // scope methods.
         scope.select = function(item) {
@@ -369,24 +373,24 @@
           if (attrs.ngModel) {
             internalModelChange = true;
 
-            ngModelCtrl.$setViewValue(eval('item.' + scope.options.valueAttr));
+            ngModelCtrl.$setViewValue(item[scope.options.valueAttr]);
           }
 
           updateSelectionMode(true, item);
 
-          var val = scope.options.clearOnSelect ? '' : eval('item.' + scope.options.nameAttr);
+          var val = scope.options.clearOnSelect ? '' : item[scope.options.nameAttr];
 
           if (attrs.npInputModel) {
             scope.npInputModel = val;
-          } else {
-            input.val(val);
           }
+
+          input.val(val);
 
           if (attrs.npSelectedItem) {
             scope.npSelectedItem = item;
           }
 
-          isFocusHandlerActive = isBlurHandlerActive = false;
+          isFocusHandlerActive = false;
 
           input.focus();
         };
@@ -465,8 +469,6 @@
                 isFocusHandlerActive = false;
               }
 
-              isBlurHandlerActive = false;
-
               input.focus();
             }
           });
@@ -475,7 +477,8 @@
         // scope events.
         scope.$on('$destroy', function() {
           angular.element(window).off('resize', resize);
-          angular.element(document).off('click keyup', blurHandler);
+          angular.element(element).off('focusin', focusinHandler);
+          angular.element(element).off('focusout', focusoutHandler);
         });
       }
     };
